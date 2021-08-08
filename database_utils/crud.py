@@ -3,11 +3,21 @@ from database_utils.db_connector import cursor, db
 import hashlib
 
 
-def get_product(short_ref):
-    sql = "SELECT * FROM product WHERE short_ref = %s"
-    cursor.execute(sql, (short_ref,))
+def get_product():
+    product_found = False
 
-    return cursor.fetchone()
+    while not product_found:
+        short_ref = input()
+        if short_ref == '+++':
+            return False
+        sql = "SELECT p_name, price FROM product WHERE short_ref = %s"
+        cursor.execute(sql, (short_ref,))
+        product = cursor.fetchone()
+
+        if product is None:
+            print('This reference does not exist!')
+        else:
+            return product
 
 
 def get_salt(id):
@@ -32,6 +42,7 @@ def update_last_login(id):
     time = datetime.now().strftime('%H:%M:%S')
     cursor.execute(sql, (timestamp, id))
     db.commit()
+
     print('Login time @ ' + time)
 
 
